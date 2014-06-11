@@ -1,5 +1,5 @@
-var Grid = require(['scripts/grid']);
-var Cell = require(['scripts/cell']);
-var Canvas = require(['scripts/canvas']);
+requirejs.config({
+  baseUrl: 'scripts'
+});
 
-requirejs(['scripts/main']);
+requirejs(['main']);

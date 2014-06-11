@@ -1,94 +1,94 @@
-var Canvas = function(el, gridSize, cellSize) {
-  this.el = el;
-  this.context = el.getContext('2d');
-  this.gridSize = gridSize;
-  this.cellSize = cellSize;
-  this.grid = new Grid(gridSize, gridSize);
+define(['grid', 'cell'], function(Grid, Cell) {
+  var Canvas = function(el, cellSize, borderWidth, colors) {
+    this.el = el;
+    this.context = el.getContext('2d');
+    this.cellSize = cellSize;
+    this.borderWidth = borderWidth;
+    this.colors = colors;
 
-  // resize the element
-  this.el.width = window.innerWidth;
-  this.el.height = window.innerHeight;
+    // resize the element
+    this.el.width = window.innerWidth;
+    this.el.height = window.innerHeight;
 
-  // listen for clicks
-  var _this = this;
-  
-  el.addEventListener('click', function(event) {
-    _this.clicked(event);
-  });
+    // listen for clicks
+  };
 
-  el.addEventListener('contextmenu', function(event) {
-    _this.rightClicked(event);
-  });
-};
+  Canvas.prototype.findCell = function(x, y, grid) {
+    var cellSize = this.cellSize,
+      borderWidth = this.borderWidth,
+      cellX = Math.floor(x / (cellSize + borderWidth)),
+      cellY = Math.floor(y / (cellSize + borderWidth));
 
-Canvas.prototype.findCell = function(x, y) {
-  var cellSize = this.cellSize,
-    cellX = Math.floor(x / (cellSize + 1)),
-    cellY = Math.floor(y / (cellSize + 1));
+    return grid.getCell(cellX, cellY);
+  };
 
-  return this.grid.getCell(cellX, cellY);
-};
+  Canvas.prototype.drawGrid = function(grid) {
+    var i,
+      j,
+      colors = this.colors,
+      context = this.context,
+      borderWidth = this.borderWidth,
+      cellSize = this.cellSize;
 
-Canvas.prototype.clicked = function(event) {
-  var cell = this.findCell(event.x, event.y);
-  
-  cell.clicked();
-};
-
-Canvas.prototype.rightClicked = function(event) {
-  var cell = this.findCell(event.x, event.y);
-  
-  cell.rightClicked();
-
-  event.preventDefault();
-};
-
-Canvas.prototype.drawGrid = function() {
-  var i, j,
-    context = this.context,
-    grid = this.grid;
-
-  for(i = 0; i < grid.height + 1; i++) {
-    context.beginPath();
-    context.moveTo(0, i * (this.cellSize + 1) + 0.5);
-    context.lineTo((this.cellSize + 1) * grid.width, i * (this.cellSize + 1) + 0.5);
-    context.strokeStyle = '#aaaaff';
-    context.stroke();
-  }
-
-  for(j = 0; j < grid.width + 1; j++) {
-    context.lineWidth = 1;
-    context.beginPath();
-    context.moveTo(j * (this.cellSize + 1) + 0.5, 0);
-    context.lineTo(j * (this.cellSize + 1) + 0.5, grid.height * (this.cellSize + 1) + 0.5);
-    context.strokeStyle = '#aaaaff';
-    context.stroke();
-  }
-};
-
-Canvas.prototype.paintCell = function(cell) {
-  var context = this.context,
-    grid = this.grid,
-    cellSize = this.cellSize,
-    x1 = cell.x * (cellSize + 1) + 1,
-    y1 = cell.y * (cellSize + 1) + 1;
-
-    context.fillStyle = cell.color;
-    context.fillRect(x1, y1, cellSize, cellSize);
-};
-
-Canvas.prototype.run = function() {
-  var i,
-    cells = this.grid.getCells(),
-    length = cells.length;
-
-  for(i = 0; i < length; i++){
-    if(cells[i].isDirty()){
-      this.paintCell(cells[i]);
-      cells[i].setClean();
+    for(i = 0; i < grid.height + 1; i++) {
+      context.lineWidth = borderWidth;
+      context.beginPath();
+      context.moveTo(0, i * (cellSize + borderWidth) + 0.5);
+      context.lineTo((cellSize + borderWidth) * grid.width, i * (cellSize + borderWidth) + 0.5);
+      context.strokeStyle = colors.grid;
+      context.stroke();
     }
-  }
 
-  var _this = this;
-  requestAnimationFrame(function() { _this.run(); });
-};
+    for(j = 0; j < grid.width + 1; j++) {
+      context.lineWidth = borderWidth;
+      context.beginPath();
+      context.moveTo(j * (this.cellSize + borderWidth) + 0.5, 0);
+      context.lineTo(j * (this.cellSize + borderWidth) + 0.5, grid.height * (this.cellSize + borderWidth) + 0.5);
+      context.strokeStyle = colors.grid;
+      context.stroke();
+    }
+  };
+
+  Canvas.prototype.paintCell = function(cell) {
+    var i,
+      colors = this.colors,
+      colorKeys = Object.keys(colors),
+      colorFound = false,
+      context = this.context,
+      borderWidth = this.borderWidth,
+      cellSize = this.cellSize,
+      x1 = cell.x * (cellSize + borderWidth) + 1,
+      y1 = cell.y * (cellSize + borderWidth) + 1;
+
+      context.clearRect(x1, y1, cellSize, cellSize);
+
+      for(i = 0; i < colorKeys.length; i++){
+        var k = colorKeys[i], v = colors[k];
+
+        if(cell[k]){
+          context.fillStyle = v;
+          colorFound = true;
+          break;
+        }
+      }
+
+      if(!colorFound) {
+        context.fillStyle = 'rgba(0, 0, 0, 1)';
+      }
+
+      context.fillRect(x1, y1, cellSize, cellSize);
+  };
+
+  Canvas.prototype.draw = function(cells) {
+    var i, length = cells.length;
+
+    for(i = 0; i < length; i++){
+      if(cells[i].isDirty()){
+        this.paintCell(cells[i]);
+        cells[i].setClean();
+      }
+    }
+  };
+
+  return Canvas;
+});
