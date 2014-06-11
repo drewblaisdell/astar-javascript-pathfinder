@@ -41,8 +41,6 @@ define([], function() {
   };
 
   Cell.prototype.clicked = function() {
-    this.player = !this.player;
-    this.obstacle = false;
     this.setDirty();
   };
 

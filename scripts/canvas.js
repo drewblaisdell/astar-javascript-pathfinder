@@ -73,7 +73,7 @@ define(['grid', 'cell'], function(Grid, Cell) {
       }
 
       if(!colorFound) {
-        context.fillStyle = 'rgba(0, 0, 0, 1)';
+        context.fillStyle = colors.background;
       }
 
       context.fillRect(x1, y1, cellSize, cellSize);

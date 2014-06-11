@@ -10,6 +10,17 @@ define([], function() {
     return d1 + d2;
   };
 
+  Astar.prototype.containsPos = function(arr, pos) {
+    var i, l = arr.length;
+    for(i = 0; i < l; i++){
+      if(this.posEquals(pos, arr[i])){
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   Astar.prototype.posEquals = function(pos1, pos2) {
     return (pos1.x === pos2.x && pos1.y === pos2.y);
   };
@@ -57,13 +68,12 @@ define([], function() {
       openList.splice(lowPoint, 1);
       closedList.push(currentCell);
       neighbors = grid.walkableNeighbors(currentCell);
-
       neighbors = this.shuffle(neighbors);
 
       for(i = 0; i < neighbors.length; i++){
         var neighbor = neighbors[i].pos();
 
-        if(closedList.indexOf(neighbor) > -1){
+        if(this.containsPos(closedList, neighbor)){
           continue;
         }
 
@@ -78,7 +88,7 @@ define([], function() {
           }
         }
 
-        if(!inOpenList){
+        if(!this.containsPos(openList, neighbor)){
           gScoreIsBest = true;
           neighbor.h = this.heuristic(neighbor, goal);
           openList.push(neighbor);
