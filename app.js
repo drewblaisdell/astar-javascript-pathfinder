@@ -1,5 +1,6 @@
 requirejs.config({
-  baseUrl: 'scripts'
+  baseUrl: 'scripts',
+  urlArgs: 'bust=' + (new Date()).getTime()
 });
 
 requirejs(['main']);

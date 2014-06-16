@@ -40,7 +40,9 @@ require(['grid', 'canvas', 'astar', 'player'], function(Grid, Canvas, Astar, Pla
     });
 
     this.clicked = function(event) {
-      var cell = this.canvas.findCell(event.x, event.y, this.grid);
+      var x = event.x || event.clientX,
+        y = event.y || event.clientY,
+        cell = this.canvas.findCell(x, y, this.grid);
 
       if(cell.obstacle) {
         return;
