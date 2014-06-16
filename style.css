@@ -1,0 +1,11 @@
+* { font-family: "Helvetica Neue", sans-serif; }
+      
+html, body { margin: 0; padding: 0; }
+
+#canvas { background: #fff; }
+
+/* Prevents highlighting the canvas when tapping squares */
+* {
+    -webkit-tap-highlight-color:rgba(0,0,0,0); /* prevent tap highlight color / shadow */
+    -webkit-user-select:none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+}

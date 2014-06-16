@@ -20,7 +20,7 @@ require(['grid', 'canvas', 'astar', 'player'], function(Grid, Canvas, Astar, Pla
     this.player = new Player(this.grid.getRandomCell(), this.grid);
 
     // create random obstacles
-    for(var i = 0; i < 300; i++){
+    for(var i = 0; i < Math.floor(this.el.height / 3); i++){
       var cell = this.grid.getRandomCell();
       if(!cell.player){
         cell.set({ obstacle: true });
